@@ -1,4 +1,4 @@
-module Elling
+module github.com/Elytrium/elling
 
 go 1.17
 
