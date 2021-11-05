@@ -1,15 +1,15 @@
 package topup
 
 import (
-	"Elling/basic/common"
-	"Elling/basic/topup/methods"
-	"Elling/elling"
-	"Elling/routing"
+	"github.com/Elytrium/elling/basic/common"
+	"github.com/Elytrium/elling/basic/topup/methods"
+	"github.com/Elytrium/elling/elling"
+	"github.com/Elytrium/elling/routing"
 	"reflect"
 	"time"
 )
 
-type TopUp struct {}
+type TopUp struct{}
 
 var Instructions common.Instructions
 
@@ -24,12 +24,12 @@ func (o TopUp) GetName() string {
 func (o TopUp) OnRegisterMethods() map[string]routing.Method {
 	return map[string]routing.Method{
 		"list": methods.List{},
-		"pay": methods.Pay{},
+		"pay":  methods.Pay{},
 	}
 }
 
 func (o TopUp) OnDBMigration() []interface{} {
-	return []interface{} {
+	return []interface{}{
 		PendingPurchase{},
 	}
 }

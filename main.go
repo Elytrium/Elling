@@ -1,9 +1,9 @@
 package main
 
 import (
-	"Elling/config"
-	"Elling/elling"
-	"Elling/routing"
+	"github.com/Elytrium/elling/config"
+	"github.com/Elytrium/elling/module"
+	"github.com/Elytrium/elling/routing"
 	"github.com/rs/zerolog/log"
 	"time"
 )
@@ -13,10 +13,12 @@ func main() {
 	log.Log().Msg("(c) 2021 Elytrium")
 
 	config.LoadConfig()
-	elling.ReloadModules()
+	module.ReloadModules()
+	routing.InitRouter()
+
 	StartTicker(time.Duration(config.AppConfig.APITick), routing.DoTick)
-	StartTicker(time.Duration(config.AppConfig.ModuleSmallTick), elling.DoSmallTick)
-	StartTicker(time.Duration(config.AppConfig.ModuleBigTick), elling.DoBigTick)
+	StartTicker(time.Duration(config.AppConfig.ModuleSmallTick), module.DoSmallTick)
+	StartTicker(time.Duration(config.AppConfig.ModuleBigTick), module.DoBigTick)
 }
 
 func StartTicker(interval time.Duration, task func()) {
@@ -24,7 +26,7 @@ func StartTicker(interval time.Duration, task func()) {
 	go func() {
 		for {
 			select {
-			case <- ticker.C:
+			case <-ticker.C:
 				task()
 			}
 		}

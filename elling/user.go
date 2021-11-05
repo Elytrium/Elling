@@ -1,5 +1,7 @@
 package elling
 
+import "github.com/Elytrium/elling/utils"
+
 type User struct {
 	DBModel
 	Email         string        `json:"email,omitempty"`

@@ -1,12 +1,12 @@
 package methods
 
 import (
-	"Elling/basic/oauth"
-	"Elling/routing"
+	"github.com/Elytrium/elling/basic/oauth"
+	"github.com/Elytrium/elling/routing"
 	"net/url"
 )
 
-type Login struct {}
+type Login struct{}
 
 func (Login) GetLimit() int {
 	return 10
@@ -34,4 +34,3 @@ func (Login) Process(v url.Values) routing.HTTPResponse {
 
 	return routing.GenBadRequestResponse("oauth.no-instruction")
 }
-

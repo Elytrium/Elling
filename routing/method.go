@@ -1,8 +1,8 @@
 package routing
 
 import (
-	"Elling/elling"
 	"encoding/json"
+	"github.com/Elytrium/elling/elling"
 	"github.com/gorilla/websocket"
 	"net/http"
 	"net/url"
@@ -115,4 +115,3 @@ func GenInternalServerError(message string) HTTPResponse {
 		Code: 500,
 	}
 }
-

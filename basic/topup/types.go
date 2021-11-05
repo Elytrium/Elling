@@ -1,7 +1,7 @@
 package topup
 
 import (
-	"Elling/elling"
+	"github.com/Elytrium/elling/elling"
 	"github.com/rs/zerolog/log"
 	"strconv"
 	"strings"

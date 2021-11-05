@@ -1,11 +1,11 @@
 package methods
 
 import (
-	"Elling/basic/topup"
-	"Elling/routing"
+	"github.com/Elytrium/elling/basic/topup"
+	"github.com/Elytrium/elling/routing"
 )
 
-type List struct {}
+type List struct{}
 
 func (List) GetLimit() int {
 	return 60

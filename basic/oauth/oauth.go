@@ -1,10 +1,10 @@
 package oauth
 
 import (
-	"Elling/basic/common"
-	"Elling/basic/oauth/methods"
-	"Elling/elling"
-	"Elling/routing"
+	"github.com/Elytrium/elling/basic/common"
+	"github.com/Elytrium/elling/basic/oauth/methods"
+	"github.com/Elytrium/elling/elling"
+	"github.com/Elytrium/elling/routing"
 	"reflect"
 )
 
@@ -28,7 +28,7 @@ func (o OAuth) OnRegisterMethods() map[string]routing.Method {
 }
 
 func (o OAuth) OnDBMigration() []interface{} {
-	return []interface{} {
+	return []interface{}{
 		elling.LinkedAccount{},
 	}
 }

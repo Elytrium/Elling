@@ -1,8 +1,8 @@
 package routing
 
 import (
-	"Elling/config"
-	"Elling/elling"
+	"github.com/Elytrium/elling/config"
+	"github.com/Elytrium/elling/elling"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
 	"github.com/rs/zerolog/log"
@@ -19,9 +19,9 @@ var limitMap = make(map[string]map[Method]int)
 
 var Router Routes
 
-type NotFoundHandler struct {}
+type NotFoundHandler struct{}
 
-type MethodNotAllowedHandler struct {}
+type MethodNotAllowedHandler struct{}
 
 type Routes map[string]map[string]Method
 

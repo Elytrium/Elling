@@ -1,8 +1,9 @@
-package elling
+package module
 
 import (
-	"Elling/routing"
 	"fmt"
+	"github.com/Elytrium/elling/elling"
+	"github.com/Elytrium/elling/routing"
 	"github.com/rs/zerolog/log"
 	"path/filepath"
 	"plugin"
@@ -31,7 +32,7 @@ func DoBigTick() {
 	}
 }
 
-func Load(m Module)  {
+func Load(m Module) {
 	List = append(List, m)
 	name := m.GetName()
 
@@ -39,7 +40,7 @@ func Load(m Module)  {
 
 	tables := m.OnDBMigration()
 	for _, table := range tables {
-		err := DB.AutoMigrate(table)
+		err := elling.DB.AutoMigrate(table)
 
 		if err != nil {
 			log.Err(err)
@@ -52,7 +53,7 @@ func Load(m Module)  {
 	log.Info().Msg("Loaded module " + name)
 }
 
-func ReloadModules()  {
+func ReloadModules() {
 	plugins, err := filepath.Glob("plugins/*.so")
 
 	if err != nil {

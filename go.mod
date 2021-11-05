@@ -11,5 +11,5 @@ require (
 	github.com/mdaverde/jsonpath v0.0.0-20180315003411-f4ae4b6f36b5 // indirect
 	github.com/rs/zerolog v1.25.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b // indirect
-	gorm.io/gorm v1.21.16 // indirect
+	gorm.io/gorm v1.22.2 // indirect
 )

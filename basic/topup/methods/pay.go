@@ -1,15 +1,15 @@
 package methods
 
 import (
-	"Elling/basic/topup"
-	"Elling/elling"
-	"Elling/routing"
+	"github.com/Elytrium/elling/basic/topup"
+	"github.com/Elytrium/elling/elling"
+	"github.com/Elytrium/elling/routing"
 	"github.com/rs/zerolog/log"
 	"net/url"
 	"strconv"
 )
 
-type Pay struct {}
+type Pay struct{}
 
 func (Pay) GetLimit() int {
 	return 60
@@ -47,4 +47,3 @@ func (Pay) Process(u elling.User, p url.Values) routing.HTTPResponse {
 
 	return routing.GenBadRequestResponse("topup.no-instruction")
 }
-

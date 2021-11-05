@@ -1,6 +1,6 @@
 package oauth
 
-import "Elling/elling"
+import "github.com/Elytrium/elling/elling"
 
 type Service struct {
 	DisplayName     string            `yaml:"display-name" json:"display_name,omitempty"`
