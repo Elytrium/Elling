@@ -17,7 +17,7 @@ var upgrader = websocket.Upgrader{
 var limitAllMap = make(map[string]int)
 var limitMap = make(map[string]map[Method]int)
 
-var Router Routes
+var Router Routes = make(map[string]map[string]Method)
 
 type NotFoundHandler struct{}
 
@@ -38,8 +38,13 @@ func InitRouter() {
 	router.MethodNotAllowedHandler = MethodNotAllowedHandler{}
 
 	address := config.AppConfig.APIAddress
-	_ = http.ListenAndServe(address, router)
-	log.Info().Str("address", address).Msg("HTTP Listener started")
+
+	log.Info().Str("address", address).Msg("Starting HTTP Listener")
+	err := http.ListenAndServe(address, router)
+
+	if err != nil {
+		log.Error().Err(err).Send()
+	}
 }
 
 func HandleAPI(writer http.ResponseWriter, request *http.Request) {

@@ -40,16 +40,26 @@ Basic modules - really simple modules, you can configure them editing their .yml
   - ```yml
     display-name: Discord
     name: discord
-    oauth-gen-request: https://discord.com/api/oauth2/authorize?client_id=793481663077548032&redirect_uri=https%3A%2F%2Fapp.elytrium.net%2Finternal%2Foauth&response_type=code&scope=email%20identify
+    oauth-gen-request: "https://discord.com/api/oauth2/authorize?client_id=793481663077548032&redirect_uri=https%3A%2F%2Fsrv.cool%2Finternal%2Foauth&response_type=code&scope=identify"
+    need-verify: true
     verify-request:
-      url: https://discord.com/api/users/@me
+      url: https://discord.com/api/oauth2/token
+      method: POST
+      headers:
+        Content-Type: application/x-www-form-urlencoded
+      data: "client_id=793481663077548032&client_secret=whoopsy&grant_type=authorization_code&code={token}&redirect_uri=https%3A%2F%2Fsrv.cool%2Finternal%2Foauth"
+      response-type: JSON
+      response-value-path:
+      - access_token
+    get-data-request:
+      url: https://discord.com/api/oauth2/@me
       method: GET
-      headers: 
+      headers:
         Authorization: Bearer {token}
       response-type: JSON
       response-value-path:
-      - username
-      - id
+      - user.username
+      - user.id
     ```
 - ```basic/topup```: Simple top-up module
     - Create the folder with name "topup"

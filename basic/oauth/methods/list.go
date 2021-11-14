@@ -1,8 +1,10 @@
 package methods
 
 import (
-	"github.com/Elytrium/elling/basic/oauth"
+	"github.com/Elytrium/elling/basic/oauth/types"
+	"github.com/Elytrium/elling/elling"
 	"github.com/Elytrium/elling/routing"
+	"net/url"
 )
 
 type List struct{}
@@ -19,6 +21,6 @@ func (List) IsPublic() bool {
 	return true
 }
 
-func (List) Process() routing.HTTPResponse {
-	return routing.GenSuccessResponse(oauth.Instructions)
+func (List) Process(_ elling.User, _ url.Values) routing.HTTPResponse {
+	return routing.GenSuccessResponse(types.Instructions)
 }

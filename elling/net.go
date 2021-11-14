@@ -3,18 +3,19 @@ package elling
 import (
 	"encoding/json"
 	"github.com/mdaverde/jsonpath"
+	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net/http"
 	"strings"
 )
 
 type NetRequest struct {
-	URL               string
-	Method            string
-	Headers           map[string]string
-	Data              string
-	ResponseType      ResponseType
-	ResponseValuePath []string
+	URL               string            `yaml:"url"`
+	Method            string            `yaml:"method"`
+	Headers           map[string]string `yaml:"headers"`
+	Data              string            `yaml:"data"`
+	ResponseType      ResponseType      `yaml:"response-type"`
+	ResponseValuePath []string          `yaml:"response-value-path"`
 }
 
 func (request NetRequest) DoRequest(replaceValues map[string]string) ([]string, error) {
@@ -35,12 +36,14 @@ func (request NetRequest) DoRequest(replaceValues map[string]string) ([]string, 
 	}
 
 	if len(safeHeaders) != 0 {
-		for i := range replaceValues {
+		for i := range safeHeaders {
 			for from, to := range replaceValues {
 				safeHeaders[i] = strings.Replace(safeHeaders[i], from, to, -1)
 			}
 		}
 	}
+
+	log.Trace().Interface("headers", safeHeaders).Str("data", safeRequestData).Str("url", safeRequestURL).Str("method", request.Method).Msg("Sending request")
 
 	httpRequest, err := http.NewRequest(request.Method, safeRequestURL, strings.NewReader(safeRequestData))
 
@@ -63,9 +66,13 @@ func (request NetRequest) DoRequest(replaceValues map[string]string) ([]string, 
 		var data interface{}
 		var serializedResult []string
 
-		json.NewDecoder(httpResponse.Body).Decode(&data)
-		for i := range request.ResponseValuePath {
-			responseValuePath := request.ResponseValuePath[i]
+		err := json.NewDecoder(httpResponse.Body).Decode(&data)
+
+		if err != nil {
+			return nil, err
+		}
+
+		for _, responseValuePath := range request.ResponseValuePath {
 			responseValue, err := jsonpath.Get(data, responseValuePath)
 
 			if err != nil {
@@ -93,5 +100,5 @@ type ResponseType string
 const (
 	ResponseJson  ResponseType = "JSON"
 	ResponsePlain              = "PLAIN"
-	ResponseNone = "NONE"
+	ResponseNone               = "NONE"
 )

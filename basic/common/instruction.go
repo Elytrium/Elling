@@ -6,32 +6,26 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"regexp"
 )
 
 type Instructions map[string]interface{}
-
-var r *regexp.Regexp
-
-func init() {
-	r = regexp.MustCompile(".*/(.*)\\.yml")
-}
 
 func ReadInstructions(p string, t reflect.Type) Instructions {
 	var instructions Instructions
 	instructions = make(Instructions)
 
 	instructionFiles, err := filepath.Glob(p + "/*.yml")
+	nameLength := len(p) + 1
 
 	if err != nil {
-		log.Err(err)
+		log.Error().Err(err).Send()
 	}
 
 	for _, file := range instructionFiles {
 		instruction := reflect.New(t).Interface()
 		content, _ := os.ReadFile(file)
 		_ = yaml.Unmarshal(content, instruction)
-		instructions[r.FindStringSubmatch(file)[0]] = instruction
+		instructions[file[nameLength:len(file)-4]] = instruction
 	}
 
 	return instructions

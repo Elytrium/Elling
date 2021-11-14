@@ -1,7 +1,7 @@
 package methods
 
 import (
-	"github.com/Elytrium/elling/basic/topup"
+	"github.com/Elytrium/elling/basic/topup/types"
 	"github.com/Elytrium/elling/elling"
 	"github.com/Elytrium/elling/routing"
 	"github.com/rs/zerolog/log"
@@ -32,12 +32,12 @@ func (Pay) Process(u elling.User, p url.Values) routing.HTTPResponse {
 
 	method := p.Get("method")
 
-	if instruction, ok := topup.Instructions[method]; ok {
-		method := instruction.(topup.Method)
+	if instruction, ok := types.Instructions[method]; ok {
+		method := instruction.(types.Method)
 		pendingPurchase, err := method.RequestTopUp(u, amount)
 
 		if err != nil {
-			log.Err(err)
+			log.Error().Err(err).Send()
 
 			return routing.GenInternalServerError("topup.pay-failed")
 		}

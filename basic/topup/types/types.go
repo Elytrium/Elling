@@ -1,12 +1,15 @@
-package topup
+package types
 
 import (
+	"github.com/Elytrium/elling/basic/common"
 	"github.com/Elytrium/elling/elling"
 	"github.com/rs/zerolog/log"
 	"strconv"
 	"strings"
 	"time"
 )
+
+var Instructions common.Instructions
 
 type Method struct {
 	Name                      string            `yaml:"name" json:"name,omitempty"`
@@ -46,7 +49,7 @@ func (m Method) RequestTopUp(user elling.User, amount int) (PendingPurchase, err
 	_, err := m.CreateRequest.DoRequest(map[string]string{
 		"{topUpID}":    strconv.FormatInt(topUpID, 10),
 		"{amount}":     strconv.Itoa(amount),
-		"{user_name}":  user.Email,
+		"{user_name}":  strconv.FormatInt(user.ID, 10),
 		"{balance_id}": strconv.FormatInt(balanceID, 10),
 		"{date}":       date.String(),
 	})
@@ -60,7 +63,7 @@ func (m Method) Validate(purchase PendingPurchase) bool {
 	})
 
 	if err != nil {
-		log.Err(err)
+		log.Error().Err(err).Send()
 	}
 
 	return resp[0] == m.CheckRequestSuccessString
@@ -76,7 +79,7 @@ func (m Method) Reject(purchase PendingPurchase) {
 	})
 
 	if err != nil {
-		log.Err(err)
+		log.Error().Err(err).Send()
 	}
 }
 

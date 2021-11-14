@@ -4,7 +4,9 @@ type Product struct {
 	ID          int64
 	DisplayName string
 	Billing     string
-	Balance     Balance
+	BalanceID   int64   `json:"-"`
+	Balance     Balance `json:"balance"`
 	Module      string
 	Type        string
+	UserID      int64
 }

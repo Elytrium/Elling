@@ -1,7 +1,6 @@
 package module
 
 import (
-	"fmt"
 	"github.com/Elytrium/elling/elling"
 	"github.com/Elytrium/elling/routing"
 	"github.com/rs/zerolog/log"
@@ -43,40 +42,44 @@ func Load(m Module) {
 		err := elling.DB.AutoMigrate(table)
 
 		if err != nil {
-			log.Err(err)
+			log.Error().Err(err).Send()
 		}
 	}
 
 	methods := m.OnRegisterMethods()
 	routing.Router[m.GetName()] = methods
 
-	log.Info().Msg("Loaded module " + name)
+	log.Info().Str("name", name).Msg("Loaded module " + name)
 }
 
 func ReloadModules() {
 	plugins, err := filepath.Glob("plugins/*.so")
 
 	if err != nil {
-		log.Err(err)
+		log.Error().Err(err).Send()
 	}
 
 	for _, filename := range plugins {
-		fmt.Println(filename)
+		log.Info().Str("filename", filename).Msg("Loading plugin " + filename)
 		p, err := plugin.Open(filename)
+
 		if err != nil {
-			log.Err(err)
+			log.Error().Err(err).Send()
+			continue
 		}
 
 		moduleSym, err := p.Lookup("Module")
 
 		if err != nil {
-			log.Err(err)
+			log.Error().Err(err).Send()
+			continue
 		}
 
 		module, ok := moduleSym.(Module)
 
 		if !ok {
-			log.Err(err)
+			log.Error().Str("filename", filename).Msg("Error in loading plugin: wrong Module format")
+			continue
 		}
 
 		Load(module)
