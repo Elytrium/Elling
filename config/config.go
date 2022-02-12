@@ -25,6 +25,8 @@ type Config struct {
 	DSN             string `default:"elling.db"`
 	SlowDBThreshold int64  `default:"400"`
 	LogLevel        string `default:"trace"`
+	MachineID       string `default:"ip"`
+	StartTime       int64  `default:"1640995200000"`
 }
 
 func LoadConfig() {

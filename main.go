@@ -20,17 +20,19 @@ func main() {
 	log.Log().Msg("Starting Elling - Module-based billing platform made with Go")
 	log.Log().Msg("(c) 2021 Elytrium")
 
+	elling.InitID()
 	elling.LoadDatabase()
 	module.ReloadModules()
-	routing.InitRouter()
 
-	StartTicker(time.Duration(config.AppConfig.APITick), routing.DoTick)
-	StartTicker(time.Duration(config.AppConfig.ModuleSmallTick), module.DoSmallTick)
-	StartTicker(time.Duration(config.AppConfig.ModuleBigTick), module.DoBigTick)
+	StartTicker(time.Duration(config.AppConfig.APITick)*time.Second, routing.DoTick)
+	StartTicker(time.Duration(config.AppConfig.ModuleSmallTick)*time.Second, elling.DoSmallTick)
+	StartTicker(time.Duration(config.AppConfig.ModuleBigTick)*time.Second, elling.DoBigTick)
+
+	routing.InitRouter()
 }
 
 func StartTicker(interval time.Duration, task func()) {
-	ticker := time.NewTicker(interval * time.Second)
+	ticker := time.NewTicker(interval)
 	go func() {
 		for {
 			select {

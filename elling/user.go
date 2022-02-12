@@ -2,24 +2,41 @@ package elling
 
 import (
 	"github.com/Elytrium/elling/utils"
-	"time"
 )
 
 type User struct {
-	ID        int64     `json:"id"`
+	ID        uint64    `json:"id"`
 	BalanceID int64     `json:"-"`
 	Balance   Balance   `json:"balance"`
 	Products  []Product `json:"products,omitempty"`
 	Token     string    `json:"token,omitempty"`
+	Active    bool      `json:"active"`
 }
 
-func NewUser() User {
-	user := User{
-		ID:       time.Now().UnixNano(),
-		Balance:  NewBalance(),
+func NewUser() *User {
+	user := &User{
+		ID:       NextID(),
+		Balance:  *NewBalance(),
 		Products: []Product{},
 		Token:    utils.GenToken(64),
+		Active:   true,
 	}
 
 	return user
+}
+
+type UserCreationEvent struct {
+	User *User
+}
+
+type UserActivationEvent struct {
+	User *User
+}
+
+type UserDeactivationEvent struct {
+	User *User
+}
+
+func (u *User) FindProducts() error {
+	return DB.Model(&u).Association("Products").Find(&u.Products)
 }

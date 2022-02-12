@@ -11,3 +11,4 @@ go build -buildmode=exe -o $DIR/elling main.go
 echo Building modules..
 go build -buildmode=plugin -o $DIR/plugins/oauth.so basic/oauth/oauth.go
 go build -buildmode=plugin -o $DIR/plugins/topup.so basic/topup/topup.go
+go build -buildmode=plugin -o $DIR/plugins/user.so basic/user/user.go

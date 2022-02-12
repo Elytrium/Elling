@@ -30,12 +30,10 @@ func InitRouter() {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/{group}/{method}", func(writer http.ResponseWriter, request *http.Request) {
-		HandleAPI(writer, request)
-	})
+	router.HandleFunc("/{group}/{method}", HandleAPI)
 
-	router.NotFoundHandler = NotFoundHandler{}
-	router.MethodNotAllowedHandler = MethodNotAllowedHandler{}
+	router.NotFoundHandler = &NotFoundHandler{}
+	router.MethodNotAllowedHandler = &MethodNotAllowedHandler{}
 
 	address := config.AppConfig.APIAddress
 
@@ -51,7 +49,20 @@ func HandleAPI(writer http.ResponseWriter, request *http.Request) {
 	vars := mux.Vars(request)
 	query := request.URL.Query()
 
-	writer.Header().Add("content-type", "application/json")
+	writer.Header().Set("Access-Control-Allow-Origin", "*")
+	writer.Header().Set("Access-Control-Allow-Headers", "*")
+
+	if request.Method == "OPTIONS" {
+		writer.Header().Set("Allow", "GET,OPTIONS")
+		_, err := writer.Write(nil)
+		if err != nil {
+			log.Error().Err(err).Msg("HTTP Options")
+			return
+		}
+		return
+	}
+
+	writer.Header().Add("Content-Type", "application/json")
 
 	if curLimit, ok := limitAllMap[request.RemoteAddr]; ok {
 		if curLimit > config.AppConfig.APIRequestLimit {
@@ -100,17 +111,17 @@ func HandleAPI(writer http.ResponseWriter, request *http.Request) {
 			switch curMethod.GetType() {
 			case Http:
 				method := curMethod.(HTTPMethod)
-				result := method.Process(userModel, query)
+				result := method.Process(&userModel, &query)
 
 				result.Write(writer)
 				break
 			case Socket:
 				method := curMethod.(SocketMethod)
-				result := method.CanRegister(query)
+				result := method.CanRegister(&query)
 
 				if result.Success {
 					conn, _ := upgrader.Upgrade(writer, request, nil)
-					method.Register(conn, userModel)
+					method.Register(conn, &userModel)
 				} else {
 					result.Write(writer)
 				}
@@ -131,10 +142,10 @@ func DoTick() {
 	limitMap = make(map[string]map[Method]int)
 }
 
-func (h NotFoundHandler) ServeHTTP(writer http.ResponseWriter, _ *http.Request) {
+func (h *NotFoundHandler) ServeHTTP(writer http.ResponseWriter, _ *http.Request) {
 	GenBadRequestResponse("not-found").Write(writer)
 }
 
-func (h MethodNotAllowedHandler) ServeHTTP(writer http.ResponseWriter, _ *http.Request) {
+func (h *MethodNotAllowedHandler) ServeHTTP(writer http.ResponseWriter, _ *http.Request) {
 	GenBadRequestResponse("not-allowed").Write(writer)
 }

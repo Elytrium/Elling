@@ -9,4 +9,20 @@ type Product struct {
 	Module      string
 	Type        string
 	UserID      int64
+	Suspended   bool
+}
+
+type ProductOrderedEvent struct {
+	User    *User
+	Product *Product
+}
+
+type ProductSuspendEvent struct {
+	User    *User
+	Product *Product
+}
+
+type ProductDeletedEvent struct {
+	User    *User
+	Product *Product
 }

@@ -11,19 +11,19 @@ import (
 
 type Pay struct{}
 
-func (Pay) GetLimit() int {
+func (*Pay) GetLimit() int {
 	return 60
 }
 
-func (Pay) GetType() routing.MethodType {
+func (*Pay) GetType() routing.MethodType {
 	return routing.Http
 }
 
-func (Pay) IsPublic() bool {
+func (*Pay) IsPublic() bool {
 	return false
 }
 
-func (Pay) Process(u elling.User, p url.Values) routing.HTTPResponse {
+func (*Pay) Process(u *elling.User, p *url.Values) *routing.HTTPResponse {
 	amount, err := strconv.Atoi(p.Get("amount"))
 
 	if err != nil || amount < 1 {

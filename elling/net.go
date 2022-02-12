@@ -2,10 +2,13 @@ package elling
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/mdaverde/jsonpath"
 	"github.com/rs/zerolog/log"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"strconv"
 	"strings"
 )
 
@@ -18,7 +21,7 @@ type NetRequest struct {
 	ResponseValuePath []string          `yaml:"response-value-path"`
 }
 
-func (request NetRequest) DoRequest(replaceValues map[string]string) ([]string, error) {
+func (request *NetRequest) DoRequest(replaceValues map[string]string) ([]string, error) {
 	client := http.Client{}
 
 	safeRequestURL := request.URL
@@ -79,7 +82,31 @@ func (request NetRequest) DoRequest(replaceValues map[string]string) ([]string, 
 				return nil, err
 			}
 
-			serializedResult = append(serializedResult, responseValue.(string))
+			var value string
+			value, ok := responseValue.(string)
+			if !ok {
+				value = strconv.Itoa(int(responseValue.(float64)))
+			}
+
+			serializedResult = append(serializedResult, value)
+		}
+		return serializedResult, nil
+	case ResponseURLEncoded:
+		var serializedResult []string
+		bytes, err := ioutil.ReadAll(httpResponse.Body)
+
+		params, err := url.ParseQuery(string(bytes))
+		if err != nil {
+			return nil, err
+		}
+		for _, responseValuePath := range request.ResponseValuePath {
+			responseValue, ok := params[responseValuePath]
+
+			if !ok {
+				return nil, errors.New("url decoding path not found")
+			}
+
+			serializedResult = append(serializedResult, responseValue[0])
 		}
 		return serializedResult, nil
 	case ResponsePlain:
@@ -90,15 +117,18 @@ func (request NetRequest) DoRequest(replaceValues map[string]string) ([]string, 
 		}
 
 		return []string{string(bytes)}, nil
+	case ResponseNone:
+		return nil, nil
+	default:
+		return nil, errors.New("unknown response type " + string(request.ResponseType))
 	}
-
-	return nil, nil
 }
 
 type ResponseType string
 
 const (
-	ResponseJson  ResponseType = "JSON"
-	ResponsePlain              = "PLAIN"
-	ResponseNone               = "NONE"
+	ResponseJson       ResponseType = "JSON"
+	ResponseURLEncoded              = "URLEncoded"
+	ResponsePlain                   = "PLAIN"
+	ResponseNone                    = "NONE"
 )

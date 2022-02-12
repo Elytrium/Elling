@@ -10,19 +10,19 @@ import (
 
 type Login struct{}
 
-func (Login) GetLimit() int {
+func (*Login) GetLimit() int {
 	return 10
 }
 
-func (Login) GetType() routing.MethodType {
+func (*Login) GetType() routing.MethodType {
 	return routing.Http
 }
 
-func (Login) IsPublic() bool {
+func (*Login) IsPublic() bool {
 	return true
 }
 
-func (Login) Process(_ elling.User, v url.Values) routing.HTTPResponse {
+func (*Login) Process(_ *elling.User, v *url.Values) *routing.HTTPResponse {
 	if instruction, ok := types.Instructions[v.Get("name")]; ok {
 		service := instruction.(*types.Service)
 		linkedAccount, err := service.ToLinkedAccount(v.Get("key"))
@@ -35,10 +35,10 @@ func (Login) Process(_ elling.User, v url.Values) routing.HTTPResponse {
 		var dbLinkedAccount types.LinkedAccount
 		res := elling.DB.Where("id = ?", linkedAccount.ID).Preload("User").First(&dbLinkedAccount)
 		if res.Error != nil {
-			linkedAccount.User = elling.NewUser()
+			linkedAccount.User = *elling.NewUser()
 			log.Trace().Interface("account", linkedAccount).Msg("Creating new user")
 			elling.DB.Save(&linkedAccount)
-			dbLinkedAccount = linkedAccount
+			dbLinkedAccount = *linkedAccount
 		}
 
 		dbLinkedAccount.DisplayParam = linkedAccount.DisplayParam

@@ -9,18 +9,18 @@ import (
 
 type List struct{}
 
-func (List) GetLimit() int {
+func (*List) GetLimit() int {
 	return 60
 }
 
-func (List) GetType() routing.MethodType {
+func (*List) GetType() routing.MethodType {
 	return routing.Http
 }
 
-func (List) IsPublic() bool {
+func (*List) IsPublic() bool {
 	return true
 }
 
-func (List) Process(_ elling.User, _ url.Values) routing.HTTPResponse {
+func (*List) Process(_ *elling.User, _ *url.Values) *routing.HTTPResponse {
 	return routing.GenSuccessResponse(types.Instructions)
 }

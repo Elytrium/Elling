@@ -38,7 +38,7 @@ func LoadDatabase() {
 
 	log.Err(err).Msg("Database initialization finished")
 
-	DB.Logger = Logger{}
+	DB.Logger = &Logger{}
 
 	_ = DB.AutoMigrate(&Balance{})
 	_ = DB.AutoMigrate(&Product{})
@@ -47,23 +47,23 @@ func LoadDatabase() {
 
 type Logger struct{}
 
-func (l Logger) LogMode(_ logger.LogLevel) logger.Interface {
-	return &l
+func (l *Logger) LogMode(_ logger.LogLevel) logger.Interface {
+	return l
 }
 
-func (l Logger) Info(_ context.Context, msg string, data ...interface{}) {
+func (l *Logger) Info(_ context.Context, msg string, data ...interface{}) {
 	log.Info().Interface("data", data).Msg(msg)
 }
 
-func (l Logger) Warn(_ context.Context, msg string, data ...interface{}) {
+func (l *Logger) Warn(_ context.Context, msg string, data ...interface{}) {
 	log.Warn().Interface("data", data).Msg(msg)
 }
 
-func (l Logger) Error(_ context.Context, msg string, data ...interface{}) {
+func (l *Logger) Error(_ context.Context, msg string, data ...interface{}) {
 	log.Error().Interface("data", data).Msg(msg)
 }
 
-func (l Logger) Trace(_ context.Context, begin time.Time, fc func() (string, int64), _ error) {
+func (l *Logger) Trace(_ context.Context, begin time.Time, fc func() (string, int64), _ error) {
 	elapsed := time.Since(begin).Milliseconds()
 
 	if elapsed > config.AppConfig.SlowDBThreshold {

@@ -1,15 +1,18 @@
 package elling
 
-import "time"
-
 type Balance struct {
-	ID     int64 `json:"id,omitempty"`
-	Amount uint  `json:"amount"`
+	ID     uint64 `json:"id,omitempty"`
+	Amount int64  `json:"amount"`
 }
 
-func NewBalance() Balance {
-	return Balance{
-		ID:     time.Now().UnixNano(),
+type BalanceChangeEvent struct {
+	User  *User
+	Delta int64
+}
+
+func NewBalance() *Balance {
+	return &Balance{
+		ID:     NextID(),
 		Amount: 0,
 	}
 }

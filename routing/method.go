@@ -34,24 +34,24 @@ type Method interface {
 
 type HTTPMethod interface {
 	Method
-	Process(user elling.User, params url.Values) HTTPResponse
+	Process(user *elling.User, params *url.Values) *HTTPResponse
 }
 
 type SocketMethod interface {
 	Method
-	CanRegister(params url.Values) HTTPResponse
-	Register(conn *websocket.Conn, user elling.User)
+	CanRegister(params *url.Values) *HTTPResponse
+	Register(conn *websocket.Conn, user *elling.User)
 }
 
-func (r HTTPResponse) Write(writer http.ResponseWriter) {
+func (r *HTTPResponse) Write(writer http.ResponseWriter) {
 	encoder := json.NewEncoder(writer)
 
 	writer.WriteHeader(r.Code)
 	_ = encoder.Encode(r.Response)
 }
 
-func GenSuccessResponse(answer interface{}) HTTPResponse {
-	return HTTPResponse{
+func GenSuccessResponse(answer interface{}) *HTTPResponse {
+	return &HTTPResponse{
 		Response: Response{
 			Success: true,
 			Message: "done",
@@ -61,8 +61,8 @@ func GenSuccessResponse(answer interface{}) HTTPResponse {
 	}
 }
 
-func GenBadRequestResponse(message string) HTTPResponse {
-	return HTTPResponse{
+func GenBadRequestResponse(message string) *HTTPResponse {
+	return &HTTPResponse{
 		Response: Response{
 			Success: false,
 			Message: message,
@@ -72,8 +72,8 @@ func GenBadRequestResponse(message string) HTTPResponse {
 	}
 }
 
-func GenForbiddenResponse(message string) HTTPResponse {
-	return HTTPResponse{
+func GenForbiddenResponse(message string) *HTTPResponse {
+	return &HTTPResponse{
 		Response: Response{
 			Success: false,
 			Message: message,
@@ -83,8 +83,8 @@ func GenForbiddenResponse(message string) HTTPResponse {
 	}
 }
 
-func GenUnauthorizedResponse(message string) HTTPResponse {
-	return HTTPResponse{
+func GenUnauthorizedResponse(message string) *HTTPResponse {
+	return &HTTPResponse{
 		Response: Response{
 			Success: false,
 			Message: message,
@@ -94,8 +94,8 @@ func GenUnauthorizedResponse(message string) HTTPResponse {
 	}
 }
 
-func GenTooManyRequestsResponse(message string) HTTPResponse {
-	return HTTPResponse{
+func GenTooManyRequestsResponse(message string) *HTTPResponse {
+	return &HTTPResponse{
 		Response: Response{
 			Success: false,
 			Message: message,
@@ -105,8 +105,8 @@ func GenTooManyRequestsResponse(message string) HTTPResponse {
 	}
 }
 
-func GenInternalServerError(message string) HTTPResponse {
-	return HTTPResponse{
+func GenInternalServerError(message string) *HTTPResponse {
+	return &HTTPResponse{
 		Response: Response{
 			Success: false,
 			Message: message,

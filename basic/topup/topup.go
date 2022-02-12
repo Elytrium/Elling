@@ -7,48 +7,28 @@ import (
 	"github.com/Elytrium/elling/elling"
 	"github.com/Elytrium/elling/routing"
 	"reflect"
-	"time"
 )
 
 type TopUp struct{}
 
-func (o TopUp) OnInit() {
+func (*TopUp) OnModuleInit() {
 	types.Instructions = common.ReadInstructions("topup", reflect.TypeOf(types.Method{}))
+	elling.RegisterListener(TopUpListener{})
 }
 
-func (o TopUp) GetName() string {
-	return "topup"
-}
-
-func (o TopUp) OnRegisterMethods() map[string]routing.Method {
-	return map[string]routing.Method{
-		"list": methods.List{},
-		"pay":  methods.Pay{},
-	}
-}
-
-func (o TopUp) OnDBMigration() []interface{} {
-	return []interface{}{
-		types.PendingPurchase{},
-	}
-}
-
-func (o TopUp) OnSmallTick() {
-	var invalidPurchases []types.PendingPurchase
-	elling.DB.Where("InvalidationDate > ?", time.Now()).Find(&invalidPurchases)
-	for _, purchase := range invalidPurchases {
-		purchase.Reject()
-	}
-
-	var validPurchases []types.PendingPurchase
-	elling.DB.Find(&validPurchases)
-	for _, purchase := range validPurchases {
-		purchase.Validate()
-	}
-}
-
-func (o TopUp) OnBigTick() {
-
+func (*TopUp) OnModuleRemove() {
+	types.Instructions = common.Instructions{}
 }
 
 var Module TopUp
+
+var ModuleMeta = elling.ModuleMeta{
+	Name: "topup",
+	Routes: map[string]routing.Method{
+		"list": &methods.List{},
+		"pay":  &methods.Pay{},
+	},
+	DatabaseFields: []interface{}{
+		types.PendingPurchase{},
+	},
+}
