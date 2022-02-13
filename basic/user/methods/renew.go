@@ -3,6 +3,7 @@ package methods
 import (
 	"github.com/Elytrium/elling/elling"
 	"github.com/Elytrium/elling/routing"
+	"github.com/rs/zerolog/log"
 	"net/url"
 )
 
@@ -21,5 +22,12 @@ func (*Renew) IsPublic() bool {
 }
 
 func (*Renew) Process(u *elling.User, _ *url.Values) *routing.HTTPResponse {
-	return routing.GenSuccessResponse(u.Balance)
+	err := u.ChangeToken()
+
+	if err != nil {
+		log.Error().Err(err).Msg("Changing token")
+		return routing.GenInternalServerError("change-token-write")
+	}
+
+	return routing.GenSuccessResponse(u)
 }

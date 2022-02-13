@@ -29,5 +29,12 @@ func (*Info) Process(u *elling.User, _ *url.Values) *routing.HTTPResponse {
 		return routing.GenInternalServerError("find-association")
 	}
 
+	err = u.FetchBalance()
+
+	if err != nil {
+		log.Error().Err(err).Msg("Find Association")
+		return routing.GenInternalServerError("find-association")
+	}
+
 	return routing.GenSuccessResponse(u)
 }
