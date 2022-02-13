@@ -14,7 +14,7 @@ import (
 )
 
 var DB *gorm.DB
-var Redis *redis.Conn
+var Redis redis.Conn
 
 type DBModel struct {
 	CreatedAt time.Time
@@ -46,8 +46,7 @@ func LoadDatabase() {
 		},
 	}
 
-	localRedis := pool.Get()
-	Redis = &localRedis
+	Redis = pool.Get()
 
 	log.Err(err).Msg("Database initialization finished")
 
