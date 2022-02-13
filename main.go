@@ -21,8 +21,12 @@ func main() {
 	log.Log().Msg("(c) 2021-2022 Elytrium")
 
 	elling.InitID()
+
 	elling.LoadDatabase()
-	module.ReloadModules()
+	defer elling.CloseDatabase()
+
+	module.LoadModules()
+	defer module.UnloadPlugins()
 
 	StartTicker(time.Duration(config.AppConfig.APITick)*time.Second, routing.DoTick)
 	StartTicker(time.Duration(config.AppConfig.ModuleSmallTick)*time.Second, elling.DoSmallTick)

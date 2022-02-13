@@ -41,15 +41,7 @@ func Load(module Module) {
 	log.Info().Str("name", meta.Name).Msg("Loaded module " + meta.Name)
 }
 
-func ReloadModules() {
-	for _, module := range Modules {
-		module.OnModuleRemove()
-	}
-
-	elling.ModuleDispatchers = make(map[reflect.Type][]*elling.Dispatcher)
-
-	Modules = []Module{}
-
+func LoadModules() {
 	plugins, err := filepath.Glob("plugins/*.so")
 
 	if err != nil {
@@ -81,4 +73,14 @@ func ReloadModules() {
 
 		Load(module)
 	}
+}
+
+func UnloadPlugins() {
+	for _, module := range Modules {
+		module.OnModuleRemove()
+	}
+
+	elling.ModuleDispatchers = make(map[reflect.Type][]*elling.Dispatcher)
+
+	Modules = []Module{}
 }

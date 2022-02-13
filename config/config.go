@@ -23,6 +23,10 @@ type Config struct {
 	ModuleBigTick   int    `default:"86400"`
 	DBType          DBType `default:"sqlite"`
 	DSN             string `default:"elling.db"`
+	RedisConn       string `default:"127.0.0.1:6379"`
+	RedisMaxIdle    int    `default:"3"`
+	RedisTimeout    int    `default:"240"`
+	RedisPassword   string `default:"redispassword"`
 	SlowDBThreshold int64  `default:"400"`
 	LogLevel        string `default:"trace"`
 	MachineID       string `default:"ip"`

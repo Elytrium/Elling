@@ -3,6 +3,7 @@ package elling
 import (
 	"context"
 	"github.com/Elytrium/elling/config"
+	"github.com/gomodule/redigo/redis"
 	"github.com/rs/zerolog/log"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -13,6 +14,7 @@ import (
 )
 
 var DB *gorm.DB
+var Redis *redis.Conn
 
 type DBModel struct {
 	CreatedAt time.Time
@@ -36,11 +38,34 @@ func LoadDatabase() {
 	var err error
 	DB, err = gorm.Open(dialector, &gorm.Config{Logger: &Logger{}})
 
+	pool := &redis.Pool{
+		MaxIdle:     config.AppConfig.RedisMaxIdle,
+		IdleTimeout: time.Duration(config.AppConfig.RedisTimeout) * time.Second,
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial("tcp", config.AppConfig.RedisConn, redis.DialPassword(config.AppConfig.RedisPassword))
+		},
+	}
+
+	localRedis := pool.Get()
+	Redis = &localRedis
+
 	log.Err(err).Msg("Database initialization finished")
 
 	_ = DB.AutoMigrate(&Balance{})
 	_ = DB.AutoMigrate(&Product{})
 	_ = DB.AutoMigrate(&User{})
+}
+
+func CloseDatabase() {
+	db, err := DB.DB()
+	if err != nil {
+		return
+	}
+
+	err = db.Close()
+	if err != nil {
+		return
+	}
 }
 
 type Logger struct{}
