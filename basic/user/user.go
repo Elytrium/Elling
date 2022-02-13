@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/Elytrium/elling/basic/user/methods"
-	"github.com/Elytrium/elling/elling"
+	"github.com/Elytrium/elling/module"
 	"github.com/Elytrium/elling/routing"
 )
 
@@ -12,13 +12,15 @@ func (*User) OnModuleInit() {}
 
 func (*User) OnModuleRemove() {}
 
-var Module User
-
-var ModuleMeta = elling.ModuleMeta{
-	Name: "user",
-	Routes: map[string]routing.Method{
-		"info":        &methods.Info{},
-		"renew_token": &methods.Renew{},
-	},
-	DatabaseFields: []interface{}{},
+func (*User) GetMeta() *module.Meta {
+	return &module.Meta{
+		Name: "user",
+		Routes: map[string]routing.Method{
+			"info":        &methods.Info{},
+			"renew_token": &methods.Renew{},
+		},
+		DatabaseFields: []interface{}{},
+	}
 }
+
+var Module User

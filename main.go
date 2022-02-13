@@ -18,7 +18,7 @@ func main() {
 	zerolog.SetGlobalLevel(logLevel)
 
 	log.Log().Msg("Starting Elling - Module-based billing platform made with Go")
-	log.Log().Msg("(c) 2021 Elytrium")
+	log.Log().Msg("(c) 2021-2022 Elytrium")
 
 	elling.InitID()
 	elling.LoadDatabase()

@@ -27,6 +27,7 @@ type Config struct {
 	LogLevel        string `default:"trace"`
 	MachineID       string `default:"ip"`
 	StartTime       int64  `default:"1640995200000"`
+	IsMaster        bool   `default:"false"`
 }
 
 func LoadConfig() {

@@ -21,6 +21,8 @@ type NetRequest struct {
 	ResponseValuePath []string          `yaml:"response-value-path"`
 }
 
+var PathNotFoundError = errors.New("url decoding path not found")
+
 func (request *NetRequest) DoRequest(replaceValues map[string]string) ([]string, error) {
 	client := http.Client{}
 
@@ -103,7 +105,7 @@ func (request *NetRequest) DoRequest(replaceValues map[string]string) ([]string,
 			responseValue, ok := params[responseValuePath]
 
 			if !ok {
-				return nil, errors.New("url decoding path not found")
+				return nil, PathNotFoundError
 			}
 
 			serializedResult = append(serializedResult, responseValue[0])

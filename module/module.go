@@ -6,18 +6,27 @@ import (
 	"github.com/rs/zerolog/log"
 	"path/filepath"
 	"plugin"
+	"reflect"
 )
 
 var Modules []Module
 
 type Module interface {
+	GetMeta() *Meta
 	OnModuleInit()
 	OnModuleRemove()
 }
 
-func Load(module Module, meta elling.ModuleMeta) {
+type Meta struct {
+	Name           string
+	Routes         map[string]routing.Method
+	DatabaseFields []interface{}
+}
+
+func Load(module Module) {
 	Modules = append(Modules, module)
 
+	meta := module.GetMeta()
 	module.OnModuleInit()
 
 	for _, table := range meta.DatabaseFields {
@@ -28,7 +37,7 @@ func Load(module Module, meta elling.ModuleMeta) {
 		}
 	}
 
-	routing.Router[meta.Name] = meta.Routes
+	routing.AddRoute(meta.Name, meta.Routes)
 	log.Info().Str("name", meta.Name).Msg("Loaded module " + meta.Name)
 }
 
@@ -36,6 +45,8 @@ func ReloadModules() {
 	for _, module := range Modules {
 		module.OnModuleRemove()
 	}
+
+	elling.ModuleDispatchers = make(map[reflect.Type][]*elling.Dispatcher)
 
 	Modules = []Module{}
 
@@ -61,13 +72,6 @@ func ReloadModules() {
 			continue
 		}
 
-		metaSym, err := p.Lookup("ModuleMeta")
-
-		if err != nil {
-			log.Error().Err(err).Msg("Error in loading plugin: ModuleMeta not found")
-			continue
-		}
-
 		module, ok := moduleSym.(Module)
 
 		if !ok {
@@ -75,13 +79,6 @@ func ReloadModules() {
 			continue
 		}
 
-		meta, ok := metaSym.(elling.ModuleMeta)
-
-		if !ok {
-			log.Error().Str("filename", filename).Msg("Error in loading plugin: wrong ModuleMeta format")
-			continue
-		}
-
-		Load(module, meta)
+		Load(module)
 	}
 }

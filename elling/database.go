@@ -34,11 +34,9 @@ func LoadDatabase() {
 	}
 
 	var err error
-	DB, err = gorm.Open(dialector)
+	DB, err = gorm.Open(dialector, &gorm.Config{Logger: &Logger{}})
 
 	log.Err(err).Msg("Database initialization finished")
-
-	DB.Logger = &Logger{}
 
 	_ = DB.AutoMigrate(&Balance{})
 	_ = DB.AutoMigrate(&Product{})

@@ -22,7 +22,7 @@ func (*Info) IsPublic() bool {
 }
 
 func (*Info) Process(u *elling.User, _ *url.Values) *routing.HTTPResponse {
-	err := u.FindProducts()
+	err := u.FetchProducts()
 
 	if err != nil {
 		log.Error().Err(err).Msg("Find Association")

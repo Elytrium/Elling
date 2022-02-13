@@ -8,7 +8,11 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/mdaverde/jsonpath v0.0.0-20180315003411-f4ae4b6f36b5
 	github.com/rs/zerolog v1.25.0
+	github.com/sony/sonyflake v1.0.0
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
+	gorm.io/driver/mysql v1.1.3
+	gorm.io/driver/postgres v1.2.2
+	gorm.io/driver/sqlite v1.2.4
 	gorm.io/gorm v1.22.3
 )
 
@@ -25,10 +29,6 @@ require (
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.2 // indirect
 	github.com/mattn/go-sqlite3 v1.14.9 // indirect
-	github.com/sony/sonyflake v1.0.0 // indirect
 	golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa // indirect
 	golang.org/x/text v0.3.7 // indirect
-	gorm.io/driver/mysql v1.1.3 // indirect
-	gorm.io/driver/postgres v1.2.2 // indirect
-	gorm.io/driver/sqlite v1.2.4 // indirect
 )

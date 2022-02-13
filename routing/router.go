@@ -17,23 +17,23 @@ var upgrader = websocket.Upgrader{
 var limitAllMap = make(map[string]int)
 var limitMap = make(map[string]map[Method]int)
 
-var Router Routes = make(map[string]map[string]Method)
+var router routes = make(map[string]map[string]Method)
 
-type NotFoundHandler struct{}
+type notFoundHandler struct{}
 
-type MethodNotAllowedHandler struct{}
+type methodNotAllowedHandler struct{}
 
-type Routes map[string]map[string]Method
+type routes map[string]map[string]Method
 
 func InitRouter() {
-	log.Debug().Interface("routes", Router).Msg("Initializing router")
+	log.Debug().Interface("routes", router).Msg("Initializing router")
 
 	router := mux.NewRouter()
 
 	router.HandleFunc("/{group}/{method}", HandleAPI)
 
-	router.NotFoundHandler = &NotFoundHandler{}
-	router.MethodNotAllowedHandler = &MethodNotAllowedHandler{}
+	router.NotFoundHandler = &notFoundHandler{}
+	router.MethodNotAllowedHandler = &methodNotAllowedHandler{}
 
 	address := config.AppConfig.APIAddress
 
@@ -79,7 +79,7 @@ func HandleAPI(writer http.ResponseWriter, request *http.Request) {
 	group := vars["group"]
 	method := vars["method"]
 
-	if curGroup, ok := Router[group]; ok {
+	if curGroup, ok := router[group]; ok {
 		if curMethod, ok := curGroup[method]; ok {
 			if curLimit, ok := limitMap[request.RemoteAddr][curMethod]; ok {
 				if curLimit > curMethod.GetLimit() {
@@ -137,15 +137,19 @@ func HandleAPI(writer http.ResponseWriter, request *http.Request) {
 	}
 }
 
+func AddRoute(name string, routes map[string]Method) {
+	router[name] = routes
+}
+
 func DoTick() {
 	limitAllMap = make(map[string]int)
 	limitMap = make(map[string]map[Method]int)
 }
 
-func (h *NotFoundHandler) ServeHTTP(writer http.ResponseWriter, _ *http.Request) {
+func (h *notFoundHandler) ServeHTTP(writer http.ResponseWriter, _ *http.Request) {
 	GenBadRequestResponse("not-found").Write(writer)
 }
 
-func (h *MethodNotAllowedHandler) ServeHTTP(writer http.ResponseWriter, _ *http.Request) {
+func (h *methodNotAllowedHandler) ServeHTTP(writer http.ResponseWriter, _ *http.Request) {
 	GenBadRequestResponse("not-allowed").Write(writer)
 }

@@ -24,6 +24,10 @@ type LinkedAccount struct {
 	DisplayParam string      `json:"display_param,omitempty" gorm:"-"`
 }
 
+var TooShortVerifyAnswer = errors.New("too short verify answer")
+
+var TooShortDataAnswer = errors.New("too short data answer")
+
 func (t Service) ToLinkedAccount(token string) (*LinkedAccount, error) {
 	if t.NeedVerify {
 		resp, err := t.VerifyRequest.DoRequest(map[string]string{
@@ -35,7 +39,7 @@ func (t Service) ToLinkedAccount(token string) (*LinkedAccount, error) {
 		}
 
 		if len(resp) < 1 {
-			return nil, errors.New("too short verify answer")
+			return nil, TooShortVerifyAnswer
 		}
 
 		token = resp[0]
@@ -50,7 +54,7 @@ func (t Service) ToLinkedAccount(token string) (*LinkedAccount, error) {
 	}
 
 	if len(resp) < 2 {
-		return nil, errors.New("too short data answer")
+		return nil, TooShortDataAnswer
 	}
 
 	displayParam := resp[0]
